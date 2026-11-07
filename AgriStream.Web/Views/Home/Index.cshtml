@@ -1,0 +1,201 @@
+﻿@{
+    ViewData["Title"] = "AgriStream Dashboard";
+}
+
+<!-- Custom Embedded Theme Styling -->
+<style>
+    :root {
+        --agri-card-bg: #ffffff;
+        --agri-primary: #5c4033;
+        --agri-primary-hover: #4a3328;
+        --agri-accent: #8b5a2b;
+        --agri-text: #2c2523;
+        --agri-border: #e8e2d9;
+        --agri-cream: #f4efe6;
+    }
+
+    .dashboard-header {
+        background-color: #4a3b32;
+        color: #fcfbf9;
+        border-bottom: 3px solid var(--agri-accent);
+    }
+
+    .agri-card {
+        background-color: var(--agri-card-bg);
+        border: 1px solid var(--agri-border);
+        border-radius: 8px;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+        .agri-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(92, 64, 51, 0.08) !important;
+        }
+
+    .agri-card-header-primary {
+        border-top: 4px solid var(--agri-primary);
+    }
+
+    .agri-card-header-accent {
+        border-top: 4px solid var(--agri-accent);
+    }
+
+    .agri-card-header-dark {
+        border-top: 4px solid #3d332d;
+    }
+
+    .btn-agri-primary {
+        background-color: var(--agri-primary);
+        color: #ffffff;
+        border: none;
+        transition: background-color 0.2s ease;
+    }
+
+        .btn-agri-primary:hover {
+            background-color: var(--agri-primary-hover);
+            color: #ffffff;
+        }
+
+    .btn-agri-dark {
+        background-color: #3d332d;
+        color: #ffffff;
+        border: none;
+    }
+
+        .btn-agri-dark:hover {
+            background-color: #2a231f;
+            color: #ffffff;
+        }
+
+    .telemetry-display {
+        background-color: var(--agri-cream);
+        border: 1px solid #e0d8cb;
+        color: #382e29;
+        font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 0.9rem;
+    }
+
+    .status-badge {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #48bb78;
+        margin-right: 6px;
+    }
+</style>
+
+<div class="container py-3">
+    <!-- Header Banner -->
+    <div class="p-4 p-md-5 mb-4 rounded-3 shadow-sm dashboard-header">
+        <div class="container-fluid py-2">
+            <div class="d-flex align-items-center mb-2">
+                <span class="status-badge"></span>
+                <span class="text-uppercase tracking-wider fs-7 text-light opacity-75 fw-semibold" style="letter-spacing: 1px;">System Operational</span>
+            </div>
+            <h1 class="display-6 fw-bold mb-2">
+                Hello, @(User.Identity?.IsAuthenticated == true ? User.Identity.Name : "Guest")
+            </h1>
+            <p class="fs-6 opacity-75 mb-0" style="max-width: 650px;">Real-time soil telemetry monitoring, automated irrigation queue management, and high-resolution aerial drone log ingest.</p>
+        </div>
+    </div>
+
+    <!-- Alert Notifications -->
+    @if (TempData["IrrigationMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" style="background-color: #e6f4ea; color: #137333;" role="alert">
+            <div class="d-flex align-items-center">
+                <div>@TempData["IrrigationMessage"]</div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-info alert-dismissible fade show border-0 shadow-sm mb-4" style="background-color: #f4efe6; color: #5c4033;" role="alert">
+            <div class="d-flex align-items-center">
+                <div>@ViewBag.Message</div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        <!-- Live Telemetry Card -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm agri-card agri-card-header-primary">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title fw-bold mb-0" style="color: var(--agri-primary);">Field Telemetry</h5>
+                            <span class="badge rounded-pill" style="background-color: var(--agri-cream); color: var(--agri-primary); border: 1px solid var(--agri-border);">Field 01</span>
+                        </div>
+                        <p class="card-text text-muted small mb-3">Live sensor payload fetched via Azure Function GET endpoint.</p>
+                        <div class="telemetry-display p-3 rounded border" style="min-height: 120px; word-break: break-all;">
+                            @ViewBag.Telemetry
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2 border-top border-light text-muted small d-flex justify-content-between">
+                        <span>Source: Table Storage</span>
+                        <span>Auto-refresh: Active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Irrigation Control Card -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-sm agri-card agri-card-header-accent">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title fw-bold mb-0" style="color: var(--agri-accent);">Irrigation Dispatch</h5>
+                            <span class="badge rounded-pill bg-light text-dark border">Queue Worker</span>
+                        </div>
+                        <p class="card-text text-muted small mb-3">Post operational watering triggers directly to the Azure Storage Queue.</p>
+                    </div>
+                    <form action="/Home/StartIrrigation" method="post" class="mt-3">
+                        <div class="bg-light p-3 rounded mb-3 border text-muted small">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Target Zone:</span>
+                                <strong class="text-dark">Zone 1 (North Field)</strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Preset Duration:</span>
+                                <strong class="text-dark">30 Minutes</strong>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-agri-primary w-100 py-2.5 fw-bold shadow-sm rounded">
+                            Dispatch Irrigation Command
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Drone Image Upload Card -->
+        <div class="col-lg-4 col-md-12">
+            <div class="card h-100 shadow-sm agri-card agri-card-header-dark">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title fw-bold mb-0 text-dark">Drone Media Ingest</h5>
+                            <span class="badge rounded-pill bg-light text-dark border">Blob Storage</span>
+                        </div>
+                        <p class="card-text text-muted small mb-3">Upload high-resolution aerial imagery to trigger the automated Blob audit logger.</p>
+                    </div>
+                    <form action="/Home/UploadDroneImage" method="post" enctype="multipart/form-data" class="mt-3">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Select Image File</label>
+                            <input type="file" name="file" class="form-control form-control-sm bg-light" style="border-color: var(--agri-border);" required />
+                        </div>
+                        <button type="submit" class="btn btn-agri-dark w-100 py-2.5 fw-bold shadow-sm rounded">
+                            Upload Aerial Imagery
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

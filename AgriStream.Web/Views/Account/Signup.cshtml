@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Sign Up - AgriStream";
+}
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-sm p-4" style="max-width: 400px; width: 100%; border-top: 4px solid #5c4033;">
+        <h3 class="fw-bold mb-3 text-center" style="color: #5c4033;">Create Account</h3>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger py-2">@ViewBag.Error</div>
+        }
+
+        <form asp-action="Signup" method="post">
+            <div class="mb-3">
+                <label class="form-label small fw-semibold">Full Name</label>
+                <input type="text" name="fullName" class="form-control" placeholder="e.g. Avuyile Plaatjie" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-semibold">Username</label>
+                <input type="text" name="username" class="form-control" placeholder="Choose a username" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-semibold">Password</label>
+                <input type="password" name="password" class="form-control" placeholder="Enter password" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-semibold">Role</label>
+                <select name="role" class="form-select">
+                    <option value="Farmer">Farmer</option>
+                    <option value="Agronomist">Agronomist</option>
+                    <option value="Admin">Admin</option>
+                </select>
+            </div>
+            <button type="submit" class="btn w-100 text-white fw-bold py-2" style="background-color: #5c4033;">Sign Up</button>
+        </form>
+        <div class="text-center mt-3 small">
+            <span>Already have an account? </span><a href="/Account/Login" style="color: #8b5a2b;">Log in here</a>
+        </div>
+    </div>
+</div>
